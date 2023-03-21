@@ -1,0 +1,143 @@
+JAGS model:
+
+model{
+ # State model
+for (i in 1:nsite){
+  for (t in 1:nyear){
+    z[i,t] ~ dbern(muZ[i,t])
+    logit(muZ[i,t]) <- (a_WALES[t]*r_WALES[i]) + (a_SCOTLAND[t]*r_SCOTLAND[i]) + (a_Anglian[t]*r_Anglian[i]) + (a_Dee[t]*r_Dee[i]) + (a_Humber[t]*r_Humber[i]) + (a_North.West[t]*r_North.West[i]) + (a_Northumbria[t]*r_Northumbria[i]) + (a_Severn[t]*r_Severn[i]) + (a_Solway.Tweed[t]*r_Solway.Tweed[i]) + (a_South.East[t]*r_South.East[i]) + (a_South.West[t]*r_South.West[i]) + (a_Thames[t]*r_Thames[i]) + eta[i]
+  }
+}
+
+# State Priors
+a_WALES[1] ~ dnorm(mu.a_WALES, 0.001)
+a_SCOTLAND[1] ~ dnorm(mu.a_SCOTLAND, 0.001)
+a_Anglian[1] ~ dnorm(mu.a_Anglian, 0.001)
+a_Dee[1] ~ dnorm(mu.a_Dee, 0.001)
+a_Humber[1] ~ dnorm(mu.a_Humber, 0.001)
+a_North.West[1] ~ dnorm(mu.a_North.West, 0.001)
+a_Northumbria[1] ~ dnorm(mu.a_Northumbria, 0.001)
+a_Severn[1] ~ dnorm(mu.a_Severn, 0.001)
+a_Solway.Tweed[1] ~ dnorm(mu.a_Solway.Tweed, 0.001)
+a_South.East[1] ~ dnorm(mu.a_South.East, 0.001)
+a_South.West[1] ~ dnorm(mu.a_South.West, 0.001)
+a_Thames[1] ~ dnorm(mu.a_Thames, 0.001)
+
+mu.a_WALES ~ dnorm(0, 0.01)
+mu.a_SCOTLAND ~ dnorm(0, 0.01)
+mu.a_Anglian ~ dnorm(0, 0.01)
+mu.a_Dee ~ dnorm(0, 0.01)
+mu.a_Humber ~ dnorm(0, 0.01)
+mu.a_North.West ~ dnorm(0, 0.01)
+mu.a_Northumbria ~ dnorm(0, 0.01)
+mu.a_Severn ~ dnorm(0, 0.01)
+mu.a_Solway.Tweed ~ dnorm(0, 0.01)
+mu.a_South.East ~ dnorm(0, 0.01)
+mu.a_South.West ~ dnorm(0, 0.01)
+mu.a_Thames ~ dnorm(0, 0.01)
+
+for(t in 2:nyear){
+  a_WALES[t] ~ dnorm(a_WALES[t-1], tau.a_WALES)
+  a_SCOTLAND[t] ~ dnorm(a_SCOTLAND[t-1], tau.a_SCOTLAND)
+  a_Anglian[t] ~ dnorm(a_Anglian[t-1], tau.a_Anglian)
+  a_Dee[t] ~ dnorm(a_Dee[t-1], tau.a_Dee)
+  a_Humber[t] ~ dnorm(a_Humber[t-1], tau.a_Humber)
+  a_North.West[t] ~ dnorm(a_North.West[t-1], tau.a_North.West)
+  a_Northumbria[t] ~ dnorm(a_Northumbria[t-1], tau.a_Northumbria)
+  a_Severn[t] ~ dnorm(a_Severn[t-1], tau.a_Severn)
+  a_Solway.Tweed[t] ~ dnorm(a_Solway.Tweed[t-1], tau.a_Solway.Tweed)
+  a_South.East[t] ~ dnorm(a_South.East[t-1], tau.a_South.East)
+  a_South.West[t] ~ dnorm(a_South.West[t-1], tau.a_South.West)
+  a_Thames[t] ~ dnorm(a_Thames[t-1], tau.a_Thames)
+}
+
+tau.a_WALES ~ dt(0, 1, 1)T(0,)
+tau.a_SCOTLAND ~ dt(0, 1, 1)T(0,)
+tau.a_Anglian ~ dt(0, 1, 1)T(0,)
+tau.a_Dee ~ dt(0, 1, 1)T(0,)
+tau.a_Humber ~ dt(0, 1, 1)T(0,)
+tau.a_North.West ~ dt(0, 1, 1)T(0,)
+tau.a_Northumbria ~ dt(0, 1, 1)T(0,)
+tau.a_Severn ~ dt(0, 1, 1)T(0,)
+tau.a_Solway.Tweed ~ dt(0, 1, 1)T(0,)
+tau.a_South.East ~ dt(0, 1, 1)T(0,)
+tau.a_South.West ~ dt(0, 1, 1)T(0,)
+tau.a_Thames ~ dt(0, 1, 1)T(0,)
+
+sd.a ~ dt(0, 1, 1)T(0,) 
+  
+for (i in 1:nsite) {
+  eta[i] ~ dnorm(0, tau2)       
+} 
+
+tau2 <- 1/(sigma2 * sigma2) 
+sigma2 ~ dt(0, 1, 1)T(0,) 
+  
+# Observation model priors 
+for (t in 1:nyear) {
+  alpha.p[t] ~ dnorm(mu.lp, tau.lp)            
+}
+
+mu.lp ~ dnorm(0, 0.01)
+
+tau.lp <- 1 / (sd.lp * sd.lp)                 
+sd.lp ~ dt(0, 1, 1)T(0,)  
+  
+# Derived parameters
+for (t in 1:nyear) {  
+  psi.fs[t] <- sum(z[1:nsite, t])/nsite
+}
+
+for (t in 1:nyear) {
+  psi.fs.r_WALES[t] <- sum(z[1:nsite,t]*r_WALES[1:nsite])/nsite_r_WALES
+}
+for (t in 1:nyear) {
+  psi.fs.r_SCOTLAND[t] <- sum(z[1:nsite,t]*r_SCOTLAND[1:nsite])/nsite_r_SCOTLAND
+}
+for (t in 1:nyear) {
+  psi.fs.r_Anglian[t] <- sum(z[1:nsite,t]*r_Anglian[1:nsite])/nsite_r_Anglian
+}
+for (t in 1:nyear) {
+  psi.fs.r_Dee[t] <- sum(z[1:nsite,t]*r_Dee[1:nsite])/nsite_r_Dee
+}
+for (t in 1:nyear) {
+  psi.fs.r_Humber[t] <- sum(z[1:nsite,t]*r_Humber[1:nsite])/nsite_r_Humber
+}
+for (t in 1:nyear) {
+  psi.fs.r_North.West[t] <- sum(z[1:nsite,t]*r_North.West[1:nsite])/nsite_r_North.West
+}
+for (t in 1:nyear) {
+  psi.fs.r_Northumbria[t] <- sum(z[1:nsite,t]*r_Northumbria[1:nsite])/nsite_r_Northumbria
+}
+for (t in 1:nyear) {
+  psi.fs.r_Severn[t] <- sum(z[1:nsite,t]*r_Severn[1:nsite])/nsite_r_Severn
+}
+for (t in 1:nyear) {
+  psi.fs.r_Solway.Tweed[t] <- sum(z[1:nsite,t]*r_Solway.Tweed[1:nsite])/nsite_r_Solway.Tweed
+}
+for (t in 1:nyear) {
+  psi.fs.r_South.East[t] <- sum(z[1:nsite,t]*r_South.East[1:nsite])/nsite_r_South.East
+}
+for (t in 1:nyear) {
+  psi.fs.r_South.West[t] <- sum(z[1:nsite,t]*r_South.West[1:nsite])/nsite_r_South.West
+}
+for (t in 1:nyear) {
+  psi.fs.r_Thames[t] <- sum(z[1:nsite,t]*r_Thames[1:nsite])/nsite_r_Thames
+}
+
+for (t in 1:nyear) {
+  psi.fs.r_ENGLAND[t] <- sum((z[1:nsite,t]*r_Anglian[1:nsite]), (z[1:nsite,t]*r_Dee[1:nsite]), (z[1:nsite,t]*r_Humber[1:nsite]), (z[1:nsite,t]*r_North.West[1:nsite]), (z[1:nsite,t]*r_Northumbria[1:nsite]), (z[1:nsite,t]*r_Severn[1:nsite]), (z[1:nsite,t]*r_Solway.Tweed[1:nsite]), (z[1:nsite,t]*r_South.East[1:nsite]), (z[1:nsite,t]*r_South.West[1:nsite]), (z[1:nsite,t]*r_Thames[1:nsite])) / sum(nsite_r_Anglian, nsite_r_Dee, nsite_r_Humber, nsite_r_North.West, nsite_r_Northumbria, nsite_r_Severn, nsite_r_Solway.Tweed, nsite_r_South.East, nsite_r_South.West, nsite_r_Thames)
+}
+for (t in 1:nyear) {
+  psi.fs.r_GB[t] <- sum((z[1:nsite,t]*r_Anglian[1:nsite]), (z[1:nsite,t]*r_Dee[1:nsite]), (z[1:nsite,t]*r_Humber[1:nsite]), (z[1:nsite,t]*r_North.West[1:nsite]), (z[1:nsite,t]*r_Northumbria[1:nsite]), (z[1:nsite,t]*r_Severn[1:nsite]), (z[1:nsite,t]*r_Solway.Tweed[1:nsite]), (z[1:nsite,t]*r_South.East[1:nsite]), (z[1:nsite,t]*r_South.West[1:nsite]), (z[1:nsite,t]*r_Thames[1:nsite]), (z[1:nsite,t]*r_WALES[1:nsite]), (z[1:nsite,t]*r_SCOTLAND[1:nsite])) / sum(nsite_r_Anglian, nsite_r_Dee, nsite_r_Humber, nsite_r_North.West, nsite_r_Northumbria, nsite_r_Severn, nsite_r_Solway.Tweed, nsite_r_South.East, nsite_r_South.West, nsite_r_Thames, nsite_r_WALES, nsite_r_SCOTLAND)
+}
+ dtype2.p ~ dnorm(0, 0.01)
+dtype3.p ~ dnorm(0, 0.01)
+### Observation Model
+for(j in 1:nvisit) {
+  y[j] ~ dbern(Py[j])
+  Py[j]<- z[Site[j],Year[j]]*p[j]
+  logit(p[j]) <-  alpha.p[Year[j]] + dtype2.p*DATATYPE2[j] + dtype3.p*DATATYPE3[j]
+} }
+Fully observed variables:
+ DATATYPE2 DATATYPE3 Site Year nsite nsite_r_Anglian nsite_r_Dee nsite_r_Humber nsite_r_North.West nsite_r_Northumbria nsite_r_SCOTLAND nsite_r_Severn nsite_r_Solway.Tweed nsite_r_South.East nsite_r_South.West nsite_r_Thames nsite_r_WALES nvisit nyear r_Anglian r_Dee r_Humber r_North.West r_Northumbria r_SCOTLAND r_Severn r_Solway.Tweed r_South.East r_South.West r_Thames r_WALES y

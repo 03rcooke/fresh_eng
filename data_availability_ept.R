@@ -5,9 +5,6 @@
 # df_Trichoptera <- readRDS("/data-s3/occmods/Trichoptera/input_data/2021_Ellcur/visitData_caddisflies.rds")$occDetdata %>%
 #   tibble::add_column(Taxa = "Trichoptera")
 # 
-# df_Aquatic <- readRDS("/data-s3/occmods/AquaticBugs/input_data/2021_Ellcur/visitData_aquatic_bugs_20210219.rds")$occDetdata %>%
-#   tibble::add_column(Taxa = "Aquatic bugs")
-# 
 # df_Plecoptera <- readRDS("/data-s3/occmods/Plecoptera/input_data/2021_Ellcur/visitData_stoneflies.rds")$occDetdata %>%
 #   tibble::add_column(Taxa = "Plecoptera")
 # 
@@ -16,7 +13,6 @@
 
 # combine all
 all_df <- dplyr::bind_rows(df_Trichoptera,
-                           df_Aquatic,
                            df_Plecoptera,
                            df_Ephemeroptera)
 
