@@ -197,11 +197,10 @@ msi_sum_occ_first <- msi_occ %>%
     median = ~median(.x, na.rm = TRUE), 
     low = ~HDInterval::hdi(.x, credMass = ci)[[1]],
     upp = ~HDInterval::hdi(.x, credMass = ci)[[2]]))) %>% 
-   dplyr::ungroup() %>% 
+  dplyr::ungroup() %>% 
   dplyr::mutate(agg = dplyr::recode(agg, North.West = "North West", Solway.Tweed = "Solway Tweed", Northumbria = "Northumbria", Humber = "Humber", Anglian = "Anglian", Thames = "Thames", South.East = "South East", South.West = "South West", Severn = "Severn")) %>% 
   dplyr::mutate(agg = factor(agg, levels = c("Solway Tweed", "Northumbria", "North West", "Humber", "Anglian", "Severn", "Thames", "South West", "South East"))) %>% 
   tibble::add_column(period = "First (1971-1992)")
-
 
 # second period
 msi_sum_occ_second <- msi_occ %>%
@@ -220,69 +219,51 @@ msi_sum_occ_second <- msi_occ %>%
   tibble::add_column(period = "Second (1993-2020)")
 
 # plot
-
 msi_growth_rates <- dplyr::bind_rows(msi_sum_occ_first, msi_sum_occ_second) %>%
   dplyr::mutate(period = factor(period, levels = rev(c("First (1971-1992)", "Second (1993-2020)")))) %>% 
-  ggplot() +
-  geom_pointrange(aes(x = agg, 
-                      y = gr_rate_median, ymin = gr_rate_low, ymax = gr_rate_upp,
-                      color = period),
-                  size = rel(0.25), position = ggplot2::position_dodge(0.3)) +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  coord_flip() +
-  scale_colour_brewer(name = "Period", palette = "Set1", breaks = c("First (1971-1992)", "Second (1993-2020)")) +
-  scale_x_discrete(limits = rev) +
-  scale_y_continuous(breaks = c(-6, -4, -2, 0, 2, 4, 6)) +
-  labs(y = "Growth rate") +
-  theme(legend.position = "bottom", 
-        axis.text = element_text(size = rel(0.65)),
-        axis.title.y = element_blank(),
-        legend.justification = "centre",
-        plot.background = element_rect(fill = "white", colour = "white"))
+  ggplot2::ggplot() +
+  ggplot2::geom_pointrange(ggplot2::aes(x = agg, 
+                                        y = gr_rate_median, ymin = gr_rate_low, ymax = gr_rate_upp,
+                                        colour = period),
+                           size = rel(0.25), position = ggplot2::position_dodge(0.3)) +
+  ggplot2::geom_hline(yintercept = 0, linetype = "dashed") +
+  ggplot2::coord_flip() +
+  ggplot2::scale_colour_brewer(name = "Period", palette = "Set1", breaks = c("First (1971-1992)", "Second (1993-2020)")) +
+  ggplot2::scale_x_discrete(limits = rev) +
+  ggplot2::scale_y_continuous(breaks = c(-6, -4, -2, 0, 2, 4, 6)) +
+  ggplot2::labs(y = "Growth rate") +
+  ggplot2::theme(legend.position = "bottom", 
+                 axis.text = ggplot2::element_text(size = rel(0.65)),
+                 axis.title.y = ggplot2::element_blank(),
+                 legend.justification = "centre",
+                 plot.background = ggplot2::element_rect(fill = "white", colour = "white"))
 
 cowplot::save_plot("outputs/fig_2_msi_growth_rates.png", msi_growth_rates, base_width = 6, base_height = 5)
 
-
-
-
 # relate trends to data availability
 
-dataAvailability <- readRDS("/data/notebooks/rstudio-fresh/fresh_diana/dataAvailabilty_ept.rds") %>%
-                      rename(period = Period) %>%
-                      mutate(agg = catchment) %>%
-                      mutate(period = ifelse(period=="first", "First (1971-1992)","Second (1993-2020)"))
+# see data_availability_ept.R
+dataAvailability <- readRDS("data/period_df.rds") %>%
+  dplyr::mutate(agg = catchment)
 
+# add onto trend data
+all_data <- dplyr::bind_rows(msi_sum_occ_first, msi_sum_occ_second) %>%
+  dplyr::inner_join(., dataAvailability, by = c("period", "agg"))
 
-#add onto trend data
-all_data <- bind_rows(msi_sum_occ_first, msi_sum_occ_second) %>%
-              inner_join(., dataAvailability, by=c("period", "agg"))
-head(all_data)
+ggplot2::ggplot(all_data, ggplot2::aes(x = nuSY, y = gr_rate_median)) +
+  ggplot2::geom_pointrange(ggplot2::aes(x = nuSY, y = gr_rate_median, ymin = gr_rate_low, ymax = gr_rate_upp, colour = period)) +
+  ggplot2::geom_text(ggplot2::aes(label = agg), size = 2.75, angle = 90) +
+  ggplot2::geom_hline(yintercept = 0, linetype = "dashed") +
+  ggplot2::scale_x_log10() +
+  ggplot2::scale_y_continuous(breaks = c(-6, -4, -2, 0, 2, 4, 6)) +
+  ggplot2::scale_colour_brewer(name = "Period", palette = "Set1", direction = -1, breaks = c("First (1971-1992)", "Second (1993-2020)")) +
+  ggplot2::labs(x = "Number of site-years", y = "Growth rate") +
+  ggplot2::theme(legend.position = "bottom",
+                 plot.background = ggplot2::element_rect(fill = "white", colour = "white"))
 
+ggplot2::ggsave("outputs/fig_s3_dataAvailability_impact.png", width = 5, height = 4)
 
-ggplot(all_data) +
-  geom_pointrange(aes(x = nuSY, 
-                      y = gr_rate_median, ymin = gr_rate_low, ymax = gr_rate_upp,
-                      colour = period)) +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  scale_x_log10()
-
-
-ggplot(all_data,aes(x = nuSY, 
-                    y = gr_rate_median)) +
-  geom_pointrange(aes(x = nuSY, 
-                      y = gr_rate_median, ymin = gr_rate_low, ymax = gr_rate_upp,
-                      colour = period)) +
-  geom_text(aes(label = catchment), size = 2.75, angle = 90) +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  scale_x_log10() +
-  xlab("Number of site-year data points") +
-  ylab("Growth rate") +
-  theme(legend.position = "top")
-
-ggsave("/data/notebooks/rstudio-fresh/fresh_diana/dataAvailability_ept_impact.png",width = 5, height = 4)
-
-
-#explore effect on precision
+# explore effect on precision
 
 sd_occ <- occ_reg %>%
   tidyr::gather(year, occ, dplyr::starts_with("year_")) %>%
@@ -292,7 +273,7 @@ sd_occ <- occ_reg %>%
   dplyr::summarise(median_occ_sd = median(occ_sd)) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(year = as.numeric(gsub("year_", "", year))) %>%
-  dplyr::filter(year>1970) %>%
+  dplyr::filter(year > 1970) %>%
   dplyr::filter(year %in% c(1971, 1992, 1993, 2020)) %>%
   dplyr::mutate(period = ifelse(year %in% 1971:1992, "First (1971-1992)", "Second (1993-2020)")) %>%
   dplyr::group_by(period, agg) %>%
@@ -300,26 +281,27 @@ sd_occ <- occ_reg %>%
   dplyr::ungroup() %>%
   dplyr::mutate(agg = gsub("\\."," ", agg))
 
+# merge with data available
+all_data_sd <- dplyr::inner_join(sd_occ, all_data, by = c("period","agg"))
 
-#merge with data available
-temp <- inner_join(sd_occ, all_data, by=c("period","agg"))
+g1 <- ggplot2::ggplot(all_data_sd, ggplot2::aes(x = nuSY, y = median_occ_sd)) +
+  ggplot2::geom_point(ggplot2::aes(colour = period)) +
+  ggplot2::geom_text(ggplot2::aes(label = catchment), size = 2.75, angle = 90) +
+  ggplot2::scale_x_log10() +
+  ggplot2::scale_colour_brewer(name = "Period", palette = "Set1", direction = -1, breaks = c("First (1971-1992)", "Second (1993-2020)")) +
+  ggplot2::labs(x = "Number of site-years", y = "Median SD of species\nannual occupancy") +
+  ggplot2::theme(legend.position = "none",
+                 plot.background = ggplot2::element_rect(fill = "white", colour = "white"))
 
-g1 <- ggplot(temp, aes(x = nuSY, y = median_occ_sd)) +
-  geom_point(aes(colour = period)) +
-  geom_text(aes(label = catchment), size = 2.75, angle = 90) +
-  scale_x_log10() +
-  xlab("Number of site-year data points") +
-  ylab("Median sd of species annual occupancy") +
-  theme(legend.position = "top")
-
-#relationship between mean growth rate and sd of growth rate
-g2 <- ggplot(temp, aes(y = abs(gr_rate_median), x = median_occ_sd)) +
-  geom_point(aes(colour = period)) +
-  geom_text(aes(label = catchment), size = 2.75, angle = 90) +
-  theme(legend.position = "top") +
-  xlab("Median sd of species annual occupancy") +
-  ylab("|Median Growth rate|")
+# relationship between mean growth rate and sd of growth rate
+g2 <- ggplot2::ggplot(all_data_sd, ggplot2::aes(y = abs(gr_rate_median), x = median_occ_sd)) +
+  ggplot2::geom_point(ggplot2::aes(colour = period)) +
+  ggplot2::geom_text(ggplot2::aes(label = catchment), size = 2.75, angle = 90) +
+  ggplot2::scale_colour_brewer(name = "Period", palette = "Set1", direction = -1, breaks = c("First (1971-1992)", "Second (1993-2020)")) +
+  ggplot2::labs(x = "Median SD of species annual occupancy", y = "\n|Median Growth rate|") +
+  ggplot2::theme(legend.position = "bottom",
+                 plot.background = ggplot2::element_rect(fill = "white", colour = "white"))
 
 cowplot::plot_grid(g1, g2, nrow = 2)
 
-ggsave("/data/notebooks/rstudio-fresh/fresh_diana/dataAvailability_ept_rel.png",width = 5, height = 7)
+ggplot2::ggsave("outputs/fig_s4_dataAvailability_rel.png", width = 6, height = 7)

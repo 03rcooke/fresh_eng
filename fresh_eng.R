@@ -46,7 +46,7 @@ startyear <- 1971
 endyear <- 2020
 ci <- 0.95
 ggplot2::theme_set(cowplot::theme_cowplot() +
-                     ggplot2::theme(plot.background = element_rect(fill = "white", colour = "white")))
+                     ggplot2::theme(plot.background = ggplot2::element_rect(fill = "white", colour = "white")))
 
 ## compile models
 
@@ -152,10 +152,10 @@ catch_map <- ggplot2::ggplot(data = dplyr::filter(UK, objectid %in% c(1,3,4))) +
   ggplot2::geom_sf(data = catch_eng, ggplot2::aes(fill = rbd_name), col = "black", alpha = 0.5, lwd = 0.5) +
   ggplot2::scale_fill_manual(values = tol_catch) +
   ggplot2::theme(axis.line = ggplot2::element_blank(),
-        axis.title = ggplot2::element_blank(),
-        axis.ticks = ggplot2::element_blank(),
-        axis.text = ggplot2::element_blank(),
-        legend.position = "none")
+                 axis.title = ggplot2::element_blank(),
+                 axis.ticks = ggplot2::element_blank(),
+                 axis.text = ggplot2::element_blank(),
+                 legend.position = "none")
 
 ## multispecies index - geometric mean occupancy
 
@@ -227,13 +227,13 @@ ind_overall <- ggplot2::ggplot(msi_sum_overall, ggplot2::aes(x = year, y = ind_g
   ggplot2::geom_point(colour = "darkgrey", size = 0.4) +
   ggplot2::scale_x_continuous(name = "Year", breaks = c(1975, 1985, 1995, 2005, 2015), expand = c(0, 0)) +
   ggplot2::facet_wrap(~ agg) +
-  ggplot2::theme(strip.background = element_rect(fill = "darkgrey"),
+  ggplot2::theme(strip.background = ggplot2::element_rect(fill = "darkgrey"),
                  legend.position = "none",
                  axis.title.y = ggplot2::element_blank())
 
 comb_plot <- cowplot::ggdraw(cowplot::plot_grid(ind_plot, cowplot::plot_grid(NULL, ind_overall, NULL, nrow = 3, rel_heights = c(0.9, 0.8, 0.1)), rel_widths = c(1, 0.5))) +
   cowplot::draw_plot(catch_map, 0.55, 0.49, 0.6, 0.6) +
-  ggplot2::theme(plot.background = element_rect(fill = "white", colour = "white"))
+  ggplot2::theme(plot.background = ggplot2::element_rect(fill = "white", colour = "white"))
 
 cowplot::save_plot("outputs/fig_1_ind.png", comb_plot, base_width = 16, base_height = 9)
 
@@ -258,14 +258,13 @@ occ_overall <- ggplot2::ggplot(msi_sum_overall, ggplot2::aes(x = year, y = gm_me
   ggplot2::scale_x_continuous(breaks = c(1975, 1985, 1995, 2005, 2015), expand = c(0, 0)) +
   ggplot2::facet_wrap(~ agg) +
   ggplot2::labs(x = "Year") +
-  ggplot2::theme(strip.background = element_rect(fill = "darkgrey"),
+  ggplot2::theme(strip.background = ggplot2::element_rect(fill = "darkgrey"),
                  legend.position = "none",
-                 axis.title.y = ggplot2::element_blank(),
-                 plot.background = element_rect(fill = "white", colour = "white"))
+                 axis.title.y = ggplot2::element_blank())
 
 occ_comb_plot <- cowplot::ggdraw(cowplot::plot_grid(occ_plot, cowplot::plot_grid(NULL, occ_overall, NULL, nrow = 3, rel_heights = c(0.9, 0.8, 0.1)), rel_widths = c(1, 0.5))) +
   cowplot::draw_plot(catch_map, 0.55, 0.49, 0.6, 0.6) +
-  ggplot2::theme(plot.background = element_rect(fill = "white", colour = "white"))
+  ggplot2::theme(plot.background = ggplot2::element_rect(fill = "white", colour = "white"))
 
 cowplot::save_plot("outputs/fig_s1_raw_occ.png", occ_comb_plot, base_width = 16, base_height = 9)
 
@@ -433,17 +432,16 @@ ind_overall_tax <- ggplot2::ggplot(msi_sum_overall_tax, ggplot2::aes(x = year, y
   ggplot2::scale_colour_manual(values = tax_col) +
   ggplot2::scale_x_continuous(name = "Year", breaks = c(1975, 1985, 1995, 2005, 2015), expand = c(0, 0)) +
   ggplot2::facet_wrap(~ agg) +
-  ggplot2::theme(strip.background = element_rect(fill = "darkgrey"),
+  ggplot2::theme(strip.background = ggplot2::element_rect(fill = "darkgrey"),
                  legend.position = "bottom", 
                  legend.direction = "vertical",
                  legend.justification = "centre",
                  legend.title = ggplot2::element_blank(),
-                 axis.title.y = ggplot2::element_blank(),
-                 plot.background = element_rect(fill = "white", colour = "white"))
+                 axis.title.y = ggplot2::element_blank())
 
 comb_plot_tax <- cowplot::ggdraw(cowplot::plot_grid(ind_plot_tax, cowplot::plot_grid(NULL, ind_overall_tax, NULL, nrow = 3, rel_heights = c(1.2, 1, 0.1)), rel_widths = c(1, 0.5))) +
   cowplot::draw_plot(catch_map, 0.55, 0.49, 0.6, 0.6) +
-  ggplot2::theme(plot.background = element_rect(fill = "white", colour = "white"))
+  ggplot2::theme(plot.background = ggplot2::element_rect(fill = "white", colour = "white"))
 
 cowplot::save_plot("outputs/fig_s5_ind_tax.png", comb_plot_tax, base_width = 16, base_height = 9)
 
@@ -469,17 +467,16 @@ occ_overall_tax <- ggplot2::ggplot(msi_sum_overall_tax, ggplot2::aes(x = year, y
   ggplot2::scale_colour_manual(values = tax_col) +
   ggplot2::scale_x_continuous(name = "Year", breaks = c(1975, 1985, 1995, 2005, 2015), expand = c(0, 0)) +
   ggplot2::facet_wrap(~ agg) +
-  ggplot2::theme(strip.background = element_rect(fill = "darkgrey"),
+  ggplot2::theme(strip.background = ggplot2::element_rect(fill = "darkgrey"),
                  legend.position = "bottom", 
                  legend.direction = "vertical",
                  legend.justification = "centre",
                  legend.title = ggplot2::element_blank(),
-                 axis.title.y = ggplot2::element_blank(),
-                 plot.background = element_rect(fill = "white", colour = "white"))
+                 axis.title.y = ggplot2::element_blank())
 
 occ_comb_plot_tax <- cowplot::ggdraw(cowplot::plot_grid(occ_plot_tax, cowplot::plot_grid(NULL, occ_overall_tax, NULL, nrow = 3, rel_heights = c(1.2, 1, 0.1)), rel_widths = c(1, 0.5))) +
   cowplot::draw_plot(catch_map, 0.55, 0.49, 0.6, 0.6) +
-  ggplot2::theme(plot.background = element_rect(fill = "white", colour = "white"))
+  ggplot2::theme(plot.background = ggplot2::element_rect(fill = "white", colour = "white"))
 
 cowplot::save_plot("outputs/fig_s6_raw_occ_tax.png", occ_comb_plot_tax, base_width = 16, base_height = 9)
 
@@ -571,14 +568,13 @@ ind_overall_unif <- ggplot2::ggplot(msi_sum_overall_unif, ggplot2::aes(x = year,
   ggplot2::scale_x_continuous(breaks = c(1975, 1985, 1995, 2005, 2015), expand = c(0, 0)) +
   ggplot2::facet_wrap(~ agg) +
   ggplot2::labs(x = "Year") +
-  ggplot2::theme(strip.background = element_rect(fill = "darkgrey"),
+  ggplot2::theme(strip.background = ggplot2::element_rect(fill = "darkgrey"),
                  legend.position = "none",
-                 axis.title.y = ggplot2::element_blank(),
-                 plot.background = element_rect(fill = "white", colour = "white"))
+                 axis.title.y = ggplot2::element_blank())
 
 comb_plot_unif <- cowplot::ggdraw(cowplot::plot_grid(ind_plot_unif, cowplot::plot_grid(NULL, ind_overall_unif, NULL, nrow = 3, rel_heights = c(0.9, 0.8, 0.1)), rel_widths = c(1, 0.5))) +
   cowplot::draw_plot(catch_map, 0.55, 0.49, 0.6, 0.6) +
-  ggplot2::theme(plot.background = element_rect(fill = "white", colour = "white"))
+  ggplot2::theme(plot.background = ggplot2::element_rect(fill = "white", colour = "white"))
 
 cowplot::save_plot("outputs/fig_s7_ind_unif.png", comb_plot_unif, base_width = 16, base_height = 9)
 
