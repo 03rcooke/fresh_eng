@@ -1,6 +1,6 @@
-# script to calculate growth rates in the first and second half ot the time-series
+# script to calculate growth rates in the first and second half of the time-series
 
-# get occupancy model predictions - using ones processed by rob - see 'fresh_rob.R'
+# get occupancy model predictions - using ones processed by rob - see 'fresh_eng.R'
 
 library(remotes) # remotes: package installation
 library(sf) # sf: spatial manipulation
@@ -14,19 +14,16 @@ library(ggplot2) # ggplot2: plotting
 library(ggrepel) # ggrepel: plotting
 library(cowplot) # cowplot: plotting
 
-# # BRCindicators package from github
-# remotes::install_github("biologicalrecordscentre/BRCindicators")
-# library(BRCindicators) # BRCindicators: abundance and occupancy indicators
-
 # # wrappeR package from github
-# remotes::install_github("https://github.com/03rcooke/wrappeR", ref = "main", force = TRUE)
+# remotes::install_github("https://github.com/03rcooke/wrappeR", ref = "main")
 library(wrappeR) # wrappeR: multi-species indicators
 
 # # commit packages to renv
 # renv::snapshot()
 
 ## small helper functions
-ggplot2::theme_set(cowplot::theme_cowplot())
+ggplot2::theme_set(cowplot::theme_cowplot() +
+                     ggplot2::theme(plot.background = element_rect(fill = "white", colour = "white")))
 
 # log of 0 is undefined
 nudgeOcc <- function(x, nudgeFac = 0.0001) {
@@ -177,19 +174,19 @@ msi_sum_overall <- msi_overall %>%
   dplyr::mutate(dplyr::across(c(gm_low, gm_upp), ~ .x / (ifelse(!is.na(dplyr::first(gm_median)), dplyr::first(gm_median), dplyr::nth(gm_median, 2)) / 100), .names = "ind_{.col}")) %>% 
   dplyr::ungroup() 
 
-## Identify trough for each group using the overall MSI
+## identify trough for each group using the overall MSI
 
 msi_sum_overall
 
 msi_sum_overall %>%
-  filter(year>1980) %>%
+  filter(year > 1980) %>%
   summarise(minYear = year[which.min(ind_gm_median)])
 
-#1993
+# 1993
 
 # msi growth rate for each period
 
-#first period
+# first period
 msi_sum_occ_first <- msi_occ %>%
   filter(year %in% c(1971, 1992)) %>%
   pivot_wider(everything(), names_from = year, values_from = "gm") %>%
@@ -206,7 +203,7 @@ msi_sum_occ_first <- msi_occ %>%
   tibble::add_column(period = "First (1971-1992)")
 
 
-#second period
+# second period
 msi_sum_occ_second <- msi_occ %>%
   filter(year %in% c(1993, 2020)) %>%
   pivot_wider(everything(), names_from = year, values_from = "gm") %>%
@@ -240,13 +237,15 @@ msi_growth_rates <- dplyr::bind_rows(msi_sum_occ_first, msi_sum_occ_second) %>%
   theme(legend.position = "bottom", 
         axis.text = element_text(size = rel(0.65)),
         axis.title.y = element_blank(),
-        legend.justification = "centre") 
+        legend.justification = "centre",
+        plot.background = element_rect(fill = "white", colour = "white"))
 
-cowplot::save_plot("outputs/msi_growth_rates.png", msi_growth_rates, base_width = 6, base_height = 5)
+cowplot::save_plot("outputs/fig_2_msi_growth_rates.png", msi_growth_rates, base_width = 6, base_height = 5)
 
-ggsave("/data/notebooks/rstudio-fresh/fresh_diana/msi_growth_rates_ept.png", width = 6, height = 5)
 
-#relate trends to data availability
+
+
+# relate trends to data availability
 
 dataAvailability <- readRDS("/data/notebooks/rstudio-fresh/fresh_diana/dataAvailabilty_ept.rds") %>%
                       rename(period = Period) %>%
