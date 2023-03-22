@@ -9,13 +9,13 @@ This repository contains the required R code to reproduce the analyses and plots
 
 ***
 
-## Trend analyses
+## Trend analyses (Fig. 1; Fig. S1; Fig. S5; Fig. S6; Fig. S7)
 
-See `fresh_eng.R` (Fig. 1; Fig. S1; Fig. S5; Fig. S6; Fig. S7)
+See `fresh_eng.R` 
 
-## Growth rate analyses and data availability plots
+## Growth rate analyses and data availability plots (Fig. 2; Fig. S2; Fig. S3; Fig. S4; Fig. S6; Fig. S7)
 
-See `msi_growth_rates.R` (Fig. 2; Fig. S2; Fig. S3; Fig. S4; Fig. S6; Fig. S7)
+See `msi_growth_rates.R` 
 
 ## Example occupancy model
 
