@@ -2,10 +2,10 @@
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/03rcooke/fresh_eng/blob/main/LICENSE)
 <!-- badges: end -->
 
-# Geographic variation in decline and recovery of freshwater insects across English river basins
+# Geographic variation in the decline and recovery of freshwater insects across English river basins
 ## fresh_eng repository
 
-This repository contains the required R code to reproduce the analyses and plots in: 'Geographic variation in decline and recovery of freshwater insects across English river basins'. Rob Cooke, Ellie E. Dyer, Diana Bowler, Andrew C. Johnson, Mark Logie & Nick J.B. Isaac.
+This repository contains the required R code to reproduce the analyses and plots in: 'Geographic variation in the decline and recovery of freshwater insects across English river basins'. Rob Cooke, Ellie E. Dyer, Diana Bowler, Andrew C. Johnson, Mark Logie & Nick J.B. Isaac.
 
 ***
 
